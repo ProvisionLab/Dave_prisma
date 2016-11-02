@@ -1,6 +1,5 @@
 package com.android.watercolor.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
@@ -9,14 +8,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 
 import com.android.watercolor.R;
+import com.android.watercolor.utils.SharedPreferencesStub;
 import com.android.watercolor.widget.CameraPreview;
+import com.android.watercolor.widget.SquaredFrameLayout;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,10 +32,10 @@ public class MainActivity extends AppCompatActivity {
     public static final int SELECT_IMAGE_CODE = 1111;
     public static final String SELECTED_IMAGE_PATH = "selectedImagePath";
     public static final String CAMERA_IMAGE_PATH = "cameraImagePath";
+    public static final String CAMERA_ID = "cameraId";
 
-    private Camera camera;
     private CameraPreview cameraPreview;
-    private FrameLayout cameraPreviewFrameLayout;
+    private SquaredFrameLayout squaredFrame;
     private ImageButton cameraFlashImageButton;
     private ImageButton takePictureImageButton;
     private ImageButton cameraSwitchImageButton;
@@ -49,11 +49,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        camera = getCameraInstance();
-        setCameraDisplayOrientation(this, currentCameraId, camera);
-        cameraPreview = new CameraPreview(this, camera);
-        cameraPreviewFrameLayout = (FrameLayout) findViewById(R.id.camera_preview);
-        cameraPreviewFrameLayout.addView(cameraPreview);
+        squaredFrame = (SquaredFrameLayout) findViewById(R.id.camera_preview);
 
         cameraFlashImageButton = (ImageButton) findViewById(R.id.flash_light);
         takePictureImageButton = (ImageButton) findViewById(R.id.take_photo);
@@ -63,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
         PackageManager packageManager = getPackageManager();
         if (!packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
             cameraSwitchImageButton.setEnabled(false);
+        }
+
+        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
+            cameraFlashImageButton.setEnabled(false);
         }
 
         cameraFlashImageButton.setOnClickListener(new View.OnClickListener() {
@@ -75,33 +75,25 @@ public class MainActivity extends AppCompatActivity {
         takePictureImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                camera.takePicture(null, null, pictureCallback);
+                cameraPreview.getCamera().takePicture(null, null, pictureCallback);
             }
         });
 
         cameraSwitchImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (cameraPreview != null) {
-                    camera.stopPreview();
-                }
-                camera.release();
+                cameraPreview.stop();
+                squaredFrame.removeView(cameraPreview);
+
+                currentCameraId = cameraPreview.getCameraId();
 
                 if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
                     currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
                 } else {
                     currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
                 }
-                camera = Camera.open(currentCameraId);
 
-                try {
-                    camera.setPreviewDisplay(cameraPreview.getHolder());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                setCameraDisplayOrientation(MainActivity.this, currentCameraId, camera);
-                camera.startPreview();
+                createCameraPreview(currentCameraId);
             }
         });
 
@@ -116,37 +108,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public static void setCameraDisplayOrientation(Activity activity, int cameraId, Camera camera) {
-        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-        android.hardware.Camera.getCameraInfo(cameraId, info);
-        int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-        int degrees = 0;
-        switch (rotation) {
-            case Surface.ROTATION_0:
-                degrees = 0;
-                break;
-            case Surface.ROTATION_90:
-                degrees = 90;
-                break;
-            case Surface.ROTATION_180:
-                degrees = 180;
-                break;
-            case Surface.ROTATION_270:
-                degrees = 270;
-                break;
-        }
+    private void createCameraPreview(int cameraId) {
+        cameraPreview = new CameraPreview(this, cameraId, CameraPreview.LayoutMode.FitToParent);
+        RelativeLayout.LayoutParams previewLayoutParams =
+                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 
-        int result;
-        //int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        // do something for phones running an SDK before lollipop
-        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            result = (info.orientation + degrees) % 360;
-            result = (360 - result) % 360; // compensate the mirror
-        } else { // back-facing
-            result = (info.orientation - degrees + 360) % 360;
-        }
-
-        camera.setDisplayOrientation(result);
+        squaredFrame.addView(cameraPreview, 0, previewLayoutParams);
     }
 
     private Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
@@ -193,6 +160,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        cameraPreview = new CameraPreview(this, SharedPreferencesStub.getData(this, CAMERA_ID, 0), CameraPreview.LayoutMode.FitToParent);
+        RelativeLayout.LayoutParams previewLayoutParams =
+                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+
+        squaredFrame.addView(cameraPreview, 0, previewLayoutParams);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        super.onPause();
+        cameraPreview.stop();
+        squaredFrame.removeView(cameraPreview);
+        cameraPreview = null;
+        SharedPreferencesStub.saveData(this, CAMERA_ID, currentCameraId);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -203,16 +192,5 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(SELECTED_IMAGE_PATH, imageUri);
             startActivity(intent);
         }
-    }
-
-    public Camera getCameraInstance() {
-        Camera c = null;
-        try {
-            currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
-            c = Camera.open(currentCameraId);
-        } catch (Exception e) {
-            Log.d(TAG, "Camera is not available");
-        }
-        return c;
     }
 }
