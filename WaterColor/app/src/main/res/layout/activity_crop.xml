@@ -4,16 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.android.watercolor.widget.SquaredFrameLayout
+    <com.theartofdev.edmodo.cropper.CropImageView
+        android:id="@+id/cropImageView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.theartofdev.edmodo.cropper.CropImageView
-            android:id="@+id/cropImageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </com.android.watercolor.widget.SquaredFrameLayout>
+        android:layout_height="match_parent" />
 
     <FrameLayout
         android:layout_width="match_parent"

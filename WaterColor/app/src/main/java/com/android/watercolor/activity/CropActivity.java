@@ -15,13 +15,16 @@ public class CropActivity extends AppCompatActivity {
 
     private CropImageView cropImageView;
     private ImageButton rotateImageButton;
+    private Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crop);
 
-        Uri imageUri = (Uri) getIntent().getExtras().get(SELECTED_IMAGE_PATH);
+        if (getIntent().getExtras() != null) {
+            imageUri = (Uri) getIntent().getExtras().get(SELECTED_IMAGE_PATH);
+        }
 
         cropImageView = (CropImageView) findViewById(R.id.cropImageView);
         cropImageView.setImageUriAsync(imageUri);

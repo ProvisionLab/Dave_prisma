@@ -2,6 +2,9 @@ package com.android.watercolor.activity;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
@@ -128,8 +131,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             try {
+
+                Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
+
                 FileOutputStream fos = new FileOutputStream(pictureFile);
-                fos.write(data);
+                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.close();
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "File not found: " + e.getMessage());
@@ -152,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, FilterActivity.class);
             intent.putExtra(CAMERA_IMAGE_PATH, mediaFile.getPath());
             startActivity(intent);
-            finish();
         } else {
             return null;
         }
