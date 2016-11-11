@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String SELECTED_IMAGE_PATH = "selectedImagePath";
     public static final String CAMERA_IMAGE_PATH = "cameraImagePath";
     public static final String CAMERA_ID = "cameraId";
+    public static final int PICTURE_SIZE = 1080;
+    public static final int PICTURE_ROTATE = 90;
 
     private CameraPreview cameraPreview;
     private SquaredFrameLayout squaredFrame;
@@ -132,14 +134,10 @@ public class MainActivity extends AppCompatActivity {
 
             try {
 
-                Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
-
-                Matrix matrix = new Matrix();
-                matrix.postRotate(90);
-                Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
+                Bitmap bitmap = processImage(data, camera);
 
                 FileOutputStream fos = new FileOutputStream(pictureFile);
-                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.close();
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "File not found: " + e.getMessage());
@@ -148,6 +146,29 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    private Bitmap processImage(byte[] data, Camera camera) throws IOException {
+
+        int width = camera.getParameters().getPictureSize().width;
+        int height = camera.getParameters().getPictureSize().height;
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+
+        int croppedWidth = (width > height) ? height : width;
+        int croppedHeight = (width > height) ? height : width;
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(PICTURE_ROTATE);
+        Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 0, croppedWidth, croppedHeight, matrix, true);
+        bitmap.recycle();
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(cropped, PICTURE_SIZE, PICTURE_SIZE, true);
+        cropped.recycle();
+
+        return scaledBitmap;
+    }
 
     private File getOutputMediaFile(int type) {
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "WaterColor");

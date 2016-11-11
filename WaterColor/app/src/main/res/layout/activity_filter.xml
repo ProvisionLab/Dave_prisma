@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <com.android.watercolor.widget.SquaredFrameLayout
+    <ImageView
+        android:id="@+id/image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </com.android.watercolor.widget.SquaredFrameLayout>
+        android:layout_height="wrap_content"
+        android:scaleType="fitStart"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/image">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/filter_list"
@@ -26,4 +21,4 @@
             android:layout_centerVertical="true"
             android:layout_marginBottom="15dp" />
     </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>
