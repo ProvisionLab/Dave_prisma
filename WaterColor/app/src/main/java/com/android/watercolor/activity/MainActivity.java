@@ -160,6 +160,15 @@ public class MainActivity extends AppCompatActivity {
         int croppedHeight = (width > height) ? height : width;
 
         Matrix matrix = new Matrix();
+
+        if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            float[] mirrorY = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
+            Matrix matrixMirrorY = new Matrix();
+            matrixMirrorY.setValues(mirrorY);
+
+            matrix.postConcat(matrixMirrorY);
+        }
+
         matrix.postRotate(PICTURE_ROTATE);
         Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 0, croppedWidth, croppedHeight, matrix, true);
         bitmap.recycle();
