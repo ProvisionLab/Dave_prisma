@@ -182,15 +182,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private File getOutputMediaFile(int type) {
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "WaterColor");
+        File mediaStorageDir = getWaterColorDirectory();
         if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
             Log.d(TAG, "failed to create directory");
             return null;
         }
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile;
         if (type == MEDIA_TYPE_IMAGE) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator + timeStamp + ".jpg");
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator + getFilename() + ".jpg");
             Intent intent = new Intent(this, FilterActivity.class);
             intent.putExtra(CAMERA_IMAGE_PATH, mediaFile.getPath());
             startActivity(intent);
@@ -234,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
                     UCrop.Options uCropOptions = new UCrop.Options();
                     uCropOptions.setToolbarColor(getResources().getColor(android.R.color.white));
                     uCropOptions.setToolbarWidgetColor(getResources().getColor(android.R.color.black));
-                    UCrop.of(imageUri, Uri.fromFile(new File(getCacheDir(), "test.png")))
+                    UCrop.of(imageUri, Uri.fromFile(new File(getWaterColorDirectory(), "CROP_ " + getFilename() + ".png")))
                             .withAspectRatio(1, 1)
                             .withMaxResultSize(1080, 1080)
                             .withOptions(uCropOptions)
@@ -261,5 +260,13 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         }
+    }
+
+    private String getFilename() {
+        return new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+    }
+
+    private File getWaterColorDirectory() {
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "WaterColor");
     }
 }
