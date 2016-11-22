@@ -1,7 +1,6 @@
 package com.android.watercolor.activity;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -12,12 +11,10 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.android.watercolor.R;
-import com.android.watercolor.utils.SharedPreferencesStub;
 import com.android.watercolor.widget.CameraPreview;
 import com.android.watercolor.widget.SquaredFrameLayout;
 import com.yalantis.ucrop.UCrop;
@@ -34,20 +31,15 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 public class MainActivity extends AppCompatActivity {
 
     public static final int SELECT_IMAGE_CODE = 1111;
-    public static final String SELECTED_IMAGE_PATH = "selectedImagePath";
     public static final String CAMERA_IMAGE_PATH = "cameraImagePath";
-    public static final String CAMERA_ID = "cameraId";
     public static final String IMAGE_URI = "imageUri";
     public static final int PICTURE_SIZE = 1080;
     public static final int PICTURE_ROTATE = 90;
 
     private CameraPreview cameraPreview;
     private SquaredFrameLayout squaredFrame;
-    private ImageButton cameraFlashImageButton;
     private ImageButton takePictureImageButton;
-    private ImageButton cameraSwitchImageButton;
-    private Button openGalleryButton;
-    private int currentCameraId;
+    private ImageButton openGalleryButton;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -58,26 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
         squaredFrame = (SquaredFrameLayout) findViewById(R.id.camera_preview);
 
-        cameraFlashImageButton = (ImageButton) findViewById(R.id.flash_light);
         takePictureImageButton = (ImageButton) findViewById(R.id.take_photo);
-        cameraSwitchImageButton = (ImageButton) findViewById(R.id.switch_camera);
-        openGalleryButton = (Button) findViewById(R.id.open_gallery);
-
-        PackageManager packageManager = getPackageManager();
-        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
-            cameraSwitchImageButton.setEnabled(false);
-        }
-
-        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
-            cameraFlashImageButton.setEnabled(false);
-        }
-
-        cameraFlashImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        openGalleryButton = (ImageButton) findViewById(R.id.open_gallery);
 
         takePictureImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,41 +60,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        cameraSwitchImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cameraPreview.stop();
-                squaredFrame.removeView(cameraPreview);
-
-                currentCameraId = cameraPreview.getCameraId();
-
-                if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                    currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
-                } else {
-                    currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
-                }
-
-                createCameraPreview(currentCameraId);
-            }
-        });
-
         openGalleryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                intent.setType("image/*");
-                startActivityForResult(intent, SELECT_IMAGE_CODE);
+                Intent intent = new Intent(MainActivity.this, PickImageActivity.class);
+                startActivity(intent);
             }
         });
-    }
-
-    private void createCameraPreview(int cameraId) {
-        cameraPreview = new CameraPreview(this, cameraId, CameraPreview.LayoutMode.FitToParent);
-        RelativeLayout.LayoutParams previewLayoutParams =
-                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-
-        squaredFrame.addView(cameraPreview, 0, previewLayoutParams);
     }
 
     private Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
@@ -163,14 +109,6 @@ public class MainActivity extends AppCompatActivity {
 
         Matrix matrix = new Matrix();
 
-        if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            float[] mirrorY = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
-            Matrix matrixMirrorY = new Matrix();
-            matrixMirrorY.setValues(mirrorY);
-
-            matrix.postConcat(matrixMirrorY);
-        }
-
         matrix.postRotate(PICTURE_ROTATE);
         Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 0, croppedWidth, croppedHeight, matrix, true);
         bitmap.recycle();
@@ -183,10 +121,12 @@ public class MainActivity extends AppCompatActivity {
 
     private File getOutputMediaFile(int type) {
         File mediaStorageDir = getWaterColorDirectory();
+
         if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
             Log.d(TAG, "failed to create directory");
             return null;
         }
+
         File mediaFile;
         if (type == MEDIA_TYPE_IMAGE) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator + getFilename() + ".jpg");
@@ -202,8 +142,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        createCameraPreview(0);
+    }
 
-        cameraPreview = new CameraPreview(this, SharedPreferencesStub.getData(this, CAMERA_ID, 0), CameraPreview.LayoutMode.FitToParent);
+    private void createCameraPreview(int cameraId) {
+        cameraPreview = new CameraPreview(this, cameraId, CameraPreview.LayoutMode.FitToParent);
         RelativeLayout.LayoutParams previewLayoutParams =
                 new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 
@@ -218,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
         cameraPreview.stop();
         squaredFrame.removeView(cameraPreview);
         cameraPreview = null;
-        SharedPreferencesStub.saveData(this, CAMERA_ID, currentCameraId);
     }
 
     @Override

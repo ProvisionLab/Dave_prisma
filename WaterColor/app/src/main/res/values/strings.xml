@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">WaterColor</string>
 
-    <string name="open_gallery">Open Gallery</string>
-
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="edit">Edit</string>
+    <string name="gallery">Camera Roll</string>
+    <string name="crop">Crop Photo</string>
+    <string name="rotate">Rotate 90 50&#x2103;</string>
 </resources>
