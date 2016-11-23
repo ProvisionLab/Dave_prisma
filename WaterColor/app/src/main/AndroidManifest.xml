@@ -33,10 +33,6 @@
             android:name=".activity.FilterActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.yalantis.ucrop.UCropActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity
             android:name=".activity.PickImageActivity"
             android:screenOrientation="portrait" />
     </application>

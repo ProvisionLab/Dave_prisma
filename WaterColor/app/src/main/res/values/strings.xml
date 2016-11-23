@@ -6,5 +6,5 @@
     <string name="edit">Edit</string>
     <string name="gallery">Camera Roll</string>
     <string name="crop">Crop Photo</string>
-    <string name="rotate">Rotate 90 50&#x2103;</string>
+    <string name="rotate">Rotate 90&#176;</string>
 </resources>

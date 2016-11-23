@@ -4,22 +4,55 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.yalantis.ucrop.view.UCropView
-        android:id="@+id/ucrop"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <include layout="@layout/toolbar_custom" />
 
-    <FrameLayout
+    <com.android.watercolor.widget.SquaredFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.yalantis.ucrop.view.UCropView
+            android:id="@+id/ucropView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent" />
+
+    </com.android.watercolor.widget.SquaredFrameLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="@color/colorPrimary">
 
-        <ImageButton
-            android:id="@+id/rotate_photo"
+        <TextView
+            android:id="@+id/rotate_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/take_photo" />
+            android:layout_centerInParent="true"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="@string/rotate"
+            android:textColor="@color/grey_color"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-    </FrameLayout>
+        <ImageButton
+            android:id="@+id/rotate_clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/rotate_text"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/clockwise" />
+
+        <ImageButton
+            android:id="@+id/rotate_counter_clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/rotate_text"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/counter_clockwise" />
+
+    </RelativeLayout>
 </LinearLayout>

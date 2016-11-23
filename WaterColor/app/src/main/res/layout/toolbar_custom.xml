@@ -12,7 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:text="@string/back"
-        android:textColor="@color/back_color"
+        android:textColor="@color/grey_color"
+        android:textSize="18sp"
+        android:textStyle="bold"
         android:visibility="gone" />
 
     <TextView
@@ -22,5 +24,6 @@
         android:layout_gravity="center"
         android:text="Title"
         android:textColor="@android:color/white"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:textStyle="bold" />
 </android.support.v7.widget.Toolbar>
