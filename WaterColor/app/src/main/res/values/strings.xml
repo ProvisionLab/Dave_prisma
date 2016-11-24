@@ -7,4 +7,5 @@
     <string name="gallery">Camera Roll</string>
     <string name="crop">Crop Photo</string>
     <string name="rotate">Rotate 90&#176;</string>
+    <string name="permission">Permission needed</string>
 </resources>

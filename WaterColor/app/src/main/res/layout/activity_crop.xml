@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cropLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <include layout="@layout/toolbar_custom" />
 
     <com.android.watercolor.widget.SquaredFrameLayout
+        android:id="@+id/square_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/controls"
+        android:layout_below="@+id/toolbar"
+        android:background="@android:color/black">
 
         <com.yalantis.ucrop.view.UCropView
-            android:id="@+id/ucropView"
+            android:id="@+id/cropView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent" />
+            android:alpha="0" />
 
     </com.android.watercolor.widget.SquaredFrameLayout>
 
     <RelativeLayout
+        android:id="@id/controls"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="150dp"
+        android:layout_alignParentBottom="true"
         android:background="@color/colorPrimary">
 
         <TextView
@@ -29,8 +34,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:text="@string/rotate"
             android:textColor="@color/grey_color"
             android:textSize="20sp"
@@ -43,6 +48,7 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/rotate_text"
             android:background="?selectableItemBackgroundBorderless"
+            android:padding="5dp"
             android:src="@drawable/clockwise" />
 
         <ImageButton
@@ -52,7 +58,8 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/rotate_text"
             android:background="?selectableItemBackgroundBorderless"
+            android:padding="5dp"
             android:src="@drawable/counter_clockwise" />
 
     </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>
