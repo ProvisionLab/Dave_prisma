@@ -22,6 +22,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.watercolor.R;
 import com.android.watercolor.view.CropImageView;
@@ -98,6 +99,14 @@ public class CropActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGestureCropImageView != null) {
+            mGestureCropImageView.cancelAllAnimations();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
 
@@ -110,15 +119,6 @@ public class CropActivity extends AppCompatActivity {
         });
 
         return true;
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mGestureCropImageView != null) {
-            mGestureCropImageView.cancelAllAnimations();
-        }
     }
 
     /**
@@ -207,6 +207,7 @@ public class CropActivity extends AppCompatActivity {
         cropView = (UCropView) findViewById(R.id.cropView);
         mGestureCropImageView = cropView.getCropImageView();
         mOverlayView = cropView.getOverlayView();
+        setStatusBarColor(getResources().getColor(R.color.colorPrimary));
 
         mGestureCropImageView.setTransformImageListener(mImageListener);
     }
@@ -289,6 +290,7 @@ public class CropActivity extends AppCompatActivity {
                 Intent intent = new Intent(CropActivity.this, FilterActivity.class);
                 intent.setData(resultUri);
                 startActivity(intent);
+                finish();
             }
 
             @Override
@@ -300,6 +302,7 @@ public class CropActivity extends AppCompatActivity {
     }
 
     protected void setResultError(Throwable throwable) {
+        Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
         Log.d("Error", "Error " + throwable.getMessage());
     }
 }

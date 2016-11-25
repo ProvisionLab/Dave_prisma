@@ -8,4 +8,5 @@
     <string name="crop">Crop Photo</string>
     <string name="rotate">Rotate 90&#176;</string>
     <string name="permission">Permission needed</string>
+    <string name="error">Error happened</string>
 </resources>
