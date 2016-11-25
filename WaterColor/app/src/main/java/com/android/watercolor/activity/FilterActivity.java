@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.android.watercolor.R;
 
 import static com.android.watercolor.activity.MainActivity.CAMERA_IMAGE_PATH;
-import static com.android.watercolor.activity.MainActivity.IMAGE_URI;
 
 public class FilterActivity extends AppCompatActivity {
 
@@ -30,7 +29,10 @@ public class FilterActivity extends AppCompatActivity {
 
         if (getIntent().getExtras() != null) {
             imagePath = getIntent().getExtras().getString(CAMERA_IMAGE_PATH);
-            imageUri = (Uri) getIntent().getExtras().get(IMAGE_URI);
+        }
+
+        if (getIntent().getData() != null) {
+            imageUri = getIntent().getData();
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

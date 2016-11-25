@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +16,6 @@ import android.widget.RelativeLayout;
 import com.android.watercolor.R;
 import com.android.watercolor.widget.CameraPreview;
 import com.android.watercolor.widget.SquaredFrameLayout;
-import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,9 +28,7 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final int SELECT_IMAGE_CODE = 1111;
     public static final String CAMERA_IMAGE_PATH = "cameraImagePath";
-    public static final String IMAGE_URI = "imageUri";
     public static final int PICTURE_SIZE = 1080;
     public static final int PICTURE_ROTATE = 90;
 
@@ -161,47 +157,6 @@ public class MainActivity extends AppCompatActivity {
         cameraPreview.stop();
         squaredFrame.removeView(cameraPreview);
         cameraPreview = null;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case SELECT_IMAGE_CODE:
-                    Uri imageUri = data.getData();
-                    Log.d(TAG, imageUri.toString());
-                    UCrop.Options uCropOptions = new UCrop.Options();
-                    uCropOptions.setToolbarColor(getResources().getColor(android.R.color.white));
-                    uCropOptions.setToolbarWidgetColor(getResources().getColor(android.R.color.black));
-                    UCrop.of(imageUri, Uri.fromFile(new File(getWaterColorDirectory(), "CROP_ " + getFilename() + ".png")))
-                            .withAspectRatio(1, 1)
-                            .withMaxResultSize(1080, 1080)
-                            .withOptions(uCropOptions)
-                            .start(this);
-//                    Intent intent = new Intent(this, CropActivity.class);
-//                    intent.putExtra(SELECTED_IMAGE_PATH, imageUri);
-//                    startActivity(intent);
-                    break;
-                case UCrop.REQUEST_CROP:
-                    final Uri resultUri = UCrop.getOutput(data);
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inJustDecodeBounds = true;
-                    BitmapFactory.decodeFile(new File(resultUri.getPath()).getAbsolutePath(), options);
-                    int imageHeight = options.outHeight;
-                    int imageWidth = options.outWidth;
-                    Log.d(TAG, "Sizes: " + imageWidth + " " + imageHeight);
-                    Intent intent = new Intent(this, FilterActivity.class);
-                    intent.putExtra(IMAGE_URI, resultUri);
-                    startActivity(intent);
-                    break;
-                case UCrop.RESULT_ERROR:
-                    final Throwable cropError = UCrop.getError(data);
-                    Log.d(TAG, "Error " + cropError.getMessage());
-                    break;
-            }
-        }
     }
 
     private String getFilename() {

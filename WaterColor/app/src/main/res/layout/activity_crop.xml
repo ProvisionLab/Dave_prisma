@@ -10,11 +10,10 @@
         android:id="@+id/square_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/controls"
         android:layout_below="@+id/toolbar"
         android:background="@android:color/black">
 
-        <com.yalantis.ucrop.view.UCropView
+        <com.android.watercolor.view.UCropView
             android:id="@+id/cropView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -23,10 +22,10 @@
     </com.android.watercolor.widget.SquaredFrameLayout>
 
     <RelativeLayout
-        android:id="@id/controls"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
+        android:layout_below="@id/square_layout"
         android:background="@color/colorPrimary">
 
         <TextView

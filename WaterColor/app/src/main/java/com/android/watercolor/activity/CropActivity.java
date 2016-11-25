@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,14 +24,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.watercolor.R;
+import com.android.watercolor.view.CropImageView;
+import com.android.watercolor.view.GestureCropImageView;
+import com.android.watercolor.view.OverlayView;
+import com.android.watercolor.view.UCropView;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.callback.BitmapCropCallback;
 import com.yalantis.ucrop.model.AspectRatio;
-import com.yalantis.ucrop.view.CropImageView;
-import com.yalantis.ucrop.view.GestureCropImageView;
-import com.yalantis.ucrop.view.OverlayView;
 import com.yalantis.ucrop.view.TransformImageView;
-import com.yalantis.ucrop.view.UCropView;
 
 import java.util.ArrayList;
 
@@ -104,8 +105,7 @@ public class CropActivity extends AppCompatActivity {
         item.getActionView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CropActivity.this, FilterActivity.class);
-                startActivity(intent);
+                cropAndSaveImage();
             }
         });
 
@@ -136,9 +136,6 @@ public class CropActivity extends AppCompatActivity {
                 setResultError(e);
                 finish();
             }
-        } else {
-            setResultError(new NullPointerException(getString(com.yalantis.ucrop.R.string.ucrop_error_input_data_is_absent)));
-            finish();
         }
     }
 
@@ -289,8 +286,9 @@ public class CropActivity extends AppCompatActivity {
 
             @Override
             public void onBitmapCropped(@NonNull Uri resultUri, int imageWidth, int imageHeight) {
-                setResultUri(resultUri, mGestureCropImageView.getTargetAspectRatio(), imageWidth, imageHeight);
-                finish();
+                Intent intent = new Intent(CropActivity.this, FilterActivity.class);
+                intent.setData(resultUri);
+                startActivity(intent);
             }
 
             @Override
@@ -301,16 +299,7 @@ public class CropActivity extends AppCompatActivity {
         });
     }
 
-    protected void setResultUri(Uri uri, float resultAspectRatio, int imageWidth, int imageHeight) {
-        setResult(RESULT_OK, new Intent()
-                .putExtra(UCrop.EXTRA_OUTPUT_URI, uri)
-                .putExtra(UCrop.EXTRA_OUTPUT_CROP_ASPECT_RATIO, resultAspectRatio)
-                .putExtra(UCrop.EXTRA_OUTPUT_IMAGE_WIDTH, imageWidth)
-                .putExtra(UCrop.EXTRA_OUTPUT_IMAGE_HEIGHT, imageHeight)
-        );
-    }
-
     protected void setResultError(Throwable throwable) {
-        setResult(UCrop.RESULT_ERROR, new Intent().putExtra(UCrop.EXTRA_ERROR, throwable));
+        Log.d("Error", "Error " + throwable.getMessage());
     }
 }
