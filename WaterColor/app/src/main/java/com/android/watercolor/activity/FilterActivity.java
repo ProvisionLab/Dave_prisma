@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +28,10 @@ public class FilterActivity extends AppCompatActivity {
     private RecyclerView filterListRecyclerView;
     private String imagePath;
     private Uri imageUri;
+    private ImageButton instagramShareButton;
+    private ImageButton facebookShareButton;
+    private ImageButton whatsappShareButton;
+    private ImageButton downloadButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,5 +90,37 @@ public class FilterActivity extends AppCompatActivity {
         FiltersAdapter filtersAdapter = new FiltersAdapter(this, filters);
         filterListRecyclerView.addItemDecoration(new FilterItemDecoration(10));
         filterListRecyclerView.setAdapter(filtersAdapter);
+
+        instagramShareButton = (ImageButton) findViewById(R.id.instagram_share);
+        instagramShareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        facebookShareButton = (ImageButton) findViewById(R.id.facebook_share);
+        facebookShareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        whatsappShareButton = (ImageButton) findViewById(R.id.whatsapp_share);
+        whatsappShareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        downloadButton = (ImageButton) findViewById(R.id.download);
+        downloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 }

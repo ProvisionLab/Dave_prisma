@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="10dp">
+        android:padding="@dimen/filter_padding">
 
         <ImageButton
             android:id="@+id/instagram_share"
@@ -68,7 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:paddingBottom="10dp"
+            android:paddingBottom="@dimen/filter_padding"
             android:paddingLeft="10dp"
             android:paddingRight="10dp" />
     </RelativeLayout>
