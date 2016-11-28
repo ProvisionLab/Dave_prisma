@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +29,6 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String CAMERA_IMAGE_PATH = "cameraImagePath";
     public static final int PICTURE_SIZE = 1080;
     public static final int PICTURE_ROTATE = 90;
 
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         if (type == MEDIA_TYPE_IMAGE) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator + getFilename() + ".jpg");
             Intent intent = new Intent(this, FilterActivity.class);
-            intent.putExtra(CAMERA_IMAGE_PATH, mediaFile.getPath());
+            intent.setData(Uri.fromFile(mediaFile));
             startActivity(intent);
         } else {
             return null;

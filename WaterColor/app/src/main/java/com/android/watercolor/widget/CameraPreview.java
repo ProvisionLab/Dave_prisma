@@ -87,6 +87,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         mSurfaceChangedCallDepth++;
         doSurfaceChanged(width, height);
+        Log.d("Sizes", width + " " + height + " | " + mPreviewSize.width + " " + mPreviewSize.height);
         mSurfaceChangedCallDepth--;
     }
 
@@ -101,7 +102,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             Camera.Size pictureSize = determinePictureSize(previewSize);
 
             if (DEBUGGING) {
-                Log.d(LOG_TAG, "Desired Preview Size - w: " + width + ", h: " + height);
+                Log.d("Sizes", "Desired Preview Size - w: " + width + ", h: " + height);
             }
 
             mPreviewSize = previewSize;
@@ -159,7 +160,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         if (DEBUGGING) {
             Log.d(LOG_TAG, "Listing all supported preview sizes");
             for (Camera.Size size : mPreviewSizeList) {
-                Log.d(LOG_TAG, "  w: " + size.width + ", h: " + size.height);
+                Log.d("Sizes", "  w: " + size.width + ", h: " + size.height);
             }
             Log.d(LOG_TAG, "Listing all supported picture sizes");
             for (Camera.Size size : mPictureSizeList) {

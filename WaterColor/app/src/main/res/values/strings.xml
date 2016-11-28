@@ -9,4 +9,7 @@
     <string name="rotate">Rotate 90&#176;</string>
     <string name="permission">Permission needed</string>
     <string name="error">Error happened</string>
+
+    <string name="notification_image_saved">Image saved</string>
+    <string name="notification_image_saved_click_to_preview">Image saved. Click to preview.</string>
 </resources>

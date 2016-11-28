@@ -1,13 +1,17 @@
 package com.android.watercolor.activity;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -18,28 +22,35 @@ import com.android.watercolor.adapter.FiltersAdapter;
 import com.android.watercolor.model.Filter;
 import com.android.watercolor.utils.FilterItemDecoration;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-
-import static com.android.watercolor.activity.MainActivity.CAMERA_IMAGE_PATH;
+import java.util.Calendar;
 
 public class FilterActivity extends AppCompatActivity {
 
     private ImageView squareImageView;
     private RecyclerView filterListRecyclerView;
-    private String imagePath;
+    private Uri cameraImageUri;
     private Uri imageUri;
     private ImageButton instagramShareButton;
     private ImageButton facebookShareButton;
     private ImageButton whatsappShareButton;
     private ImageButton downloadButton;
 
+    private static final int DOWNLOAD_NOTIFICATION_ID_DONE = 911;
+    private static final String TAG = FilterActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
 
-        if (getIntent().getExtras() != null) {
-            imagePath = getIntent().getExtras().getString(CAMERA_IMAGE_PATH);
+        if (getIntent().getData() != null) {
+            cameraImageUri = getIntent().getData();
         }
 
         if (getIntent().getData() != null) {
@@ -63,9 +74,8 @@ public class FilterActivity extends AppCompatActivity {
 
         squareImageView = (ImageView) findViewById(R.id.processed_image);
 
-        if (imagePath != null) {
-            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-            squareImageView.setImageBitmap(bitmap);
+        if (cameraImageUri != null) {
+            squareImageView.setImageURI(cameraImageUri);
         } else if (imageUri != null) {
             squareImageView.setImageURI(imageUri);
         }
@@ -119,8 +129,50 @@ public class FilterActivity extends AppCompatActivity {
         downloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                try {
+                    if (imageUri != null) {
+                        saveCroppedImage(imageUri);
+                    } else {
+                        saveCroppedImage(cameraImageUri);
+                    }
+                } catch (IOException e) {
+                    Log.e(TAG, "Error " + e.getMessage());
+                }
             }
         });
+    }
+
+    private void saveCroppedImage(Uri croppedFileUri) throws IOException {
+        File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "WaterColor");
+        String filename = String.format("%d_%s", Calendar.getInstance().getTimeInMillis(), croppedFileUri.getLastPathSegment());
+
+        File saveFile = new File(directory, filename);
+
+        FileInputStream inStream = new FileInputStream(new File(croppedFileUri.getPath()));
+        FileOutputStream outStream = new FileOutputStream(saveFile);
+        FileChannel inChannel = inStream.getChannel();
+        FileChannel outChannel = outStream.getChannel();
+        inChannel.transferTo(0, inChannel.size(), outChannel);
+        inStream.close();
+        outStream.close();
+
+        showNotification(saveFile);
+    }
+
+    private void showNotification(File file) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setDataAndType(Uri.fromFile(file), "image/*");
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
+
+        notification
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(getString(R.string.notification_image_saved_click_to_preview))
+                .setTicker(getString(R.string.notification_image_saved))
+                .setOngoing(false)
+                .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
+                .setAutoCancel(true);
+        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(DOWNLOAD_NOTIFICATION_ID_DONE, notification.build());
     }
 }
