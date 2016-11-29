@@ -34,7 +34,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     private ArrayList<String> images;
     private Context context;
 
-    private static final String FILE_NAME = "croppedImage";
+    private static final String FILE_NAME = "croppedImage.jpg";
 
     public GalleryAdapter(ArrayList<String> images, Context context) {
         this.images = images;

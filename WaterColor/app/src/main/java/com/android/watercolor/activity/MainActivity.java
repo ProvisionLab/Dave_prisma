@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             try {
-
                 Bitmap bitmap = processImage(data, camera);
 
                 FileOutputStream fos = new FileOutputStream(pictureFile);
@@ -116,16 +115,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private File getOutputMediaFile(int type) {
-        File mediaStorageDir = getWaterColorDirectory();
-
-        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
-            Log.d(TAG, "failed to create directory");
-            return null;
-        }
-
         File mediaFile;
         if (type == MEDIA_TYPE_IMAGE) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator + getFilename() + ".jpg");
+            mediaFile = new File(getCacheDir() + File.separator + getFilename() + ".jpg");
             Intent intent = new Intent(this, FilterActivity.class);
             intent.setData(Uri.fromFile(mediaFile));
             startActivity(intent);
@@ -142,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createCameraPreview(int cameraId) {
-        cameraPreview = new CameraPreview(this, cameraId, CameraPreview.LayoutMode.FitToParent);
+        cameraPreview = new CameraPreview(this, cameraId);
         RelativeLayout.LayoutParams previewLayoutParams =
                 new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 
@@ -164,6 +156,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private File getWaterColorDirectory() {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "WaterColor");
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getString(R.string.app_name));
     }
 }

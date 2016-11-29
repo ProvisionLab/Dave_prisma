@@ -34,7 +34,6 @@ public class FilterActivity extends AppCompatActivity {
 
     private ImageView squareImageView;
     private RecyclerView filterListRecyclerView;
-    private Uri cameraImageUri;
     private Uri imageUri;
     private ImageButton instagramShareButton;
     private ImageButton facebookShareButton;
@@ -48,10 +47,6 @@ public class FilterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
-
-        if (getIntent().getData() != null) {
-            cameraImageUri = getIntent().getData();
-        }
 
         if (getIntent().getData() != null) {
             imageUri = getIntent().getData();
@@ -74,9 +69,7 @@ public class FilterActivity extends AppCompatActivity {
 
         squareImageView = (ImageView) findViewById(R.id.processed_image);
 
-        if (cameraImageUri != null) {
-            squareImageView.setImageURI(cameraImageUri);
-        } else if (imageUri != null) {
+        if (imageUri != null) {
             squareImageView.setImageURI(imageUri);
         }
 
@@ -130,10 +123,9 @@ public class FilterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    Log.d(TAG, "Cropped " + imageUri);
                     if (imageUri != null) {
                         saveCroppedImage(imageUri);
-                    } else {
-                        saveCroppedImage(cameraImageUri);
                     }
                 } catch (IOException e) {
                     Log.e(TAG, "Error " + e.getMessage());
@@ -143,7 +135,7 @@ public class FilterActivity extends AppCompatActivity {
     }
 
     private void saveCroppedImage(Uri croppedFileUri) throws IOException {
-        File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "WaterColor");
+        File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getString(R.string.app_name));
         String filename = String.format("%d_%s", Calendar.getInstance().getTimeInMillis(), croppedFileUri.getLastPathSegment());
 
         File saveFile = new File(directory, filename);
@@ -171,6 +163,7 @@ public class FilterActivity extends AppCompatActivity {
                 .setContentText(getString(R.string.notification_image_saved_click_to_preview))
                 .setTicker(getString(R.string.notification_image_saved))
                 .setOngoing(false)
+                .setSmallIcon(R.drawable.download)
                 .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
                 .setAutoCancel(true);
         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(DOWNLOAD_NOTIFICATION_ID_DONE, notification.build());
