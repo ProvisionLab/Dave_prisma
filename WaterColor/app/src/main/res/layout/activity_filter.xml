@@ -7,17 +7,35 @@
 
     <include layout="@layout/toolbar_custom" />
 
-    <com.android.watercolor.widget.SquaredFrameLayout
-        android:id="@+id/square_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/processed_image"
+        <com.android.watercolor.widget.SquaredFrameLayout
+            android:id="@+id/square_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitStart" />
-    </com.android.watercolor.widget.SquaredFrameLayout>
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/processed_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitStart" />
+        </com.android.watercolor.widget.SquaredFrameLayout>
+
+        <RelativeLayout
+            android:id="@+id/progress_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_centerInParent="true" />
+        </RelativeLayout>
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/share_layout"

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.android.watercolor.R;
 import com.android.watercolor.model.Filter;
+import com.android.watercolor.utils.ItemClickListener;
 
 import java.util.ArrayList;
 
@@ -20,7 +21,10 @@ public class FiltersAdapter extends RecyclerView.Adapter<FiltersAdapter.ViewHold
 
     private ArrayList<Filter> filters;
     private Context context;
+    private ItemClickListener clickListener;
     private int lastCheckedPosition = -1;
+
+    private static final String TAG = FiltersAdapter.class.getSimpleName();
 
     public FiltersAdapter(Context context, ArrayList<Filter> filters) {
         this.filters = filters;
@@ -40,12 +44,16 @@ public class FiltersAdapter extends RecyclerView.Adapter<FiltersAdapter.ViewHold
         holder.checkImageView.setVisibility(position == lastCheckedPosition ? View.VISIBLE : View.GONE);
     }
 
+    public void setClickListener(ItemClickListener itemClickListener) {
+        this.clickListener = itemClickListener;
+    }
+
     @Override
     public int getItemCount() {
         return filters.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView filterImageView;
         private ImageView checkImageView;
@@ -56,13 +64,14 @@ public class FiltersAdapter extends RecyclerView.Adapter<FiltersAdapter.ViewHold
             filterImageView = (ImageView) itemView.findViewById(R.id.filter_image);
             checkImageView = (ImageView) itemView.findViewById(R.id.check);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    lastCheckedPosition = getAdapterPosition();
-                    notifyItemRangeChanged(0, filters.size());
-                }
-            });
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            lastCheckedPosition = getAdapterPosition();
+            notifyItemRangeChanged(0, filters.size());
+            if (clickListener != null) clickListener.onClick(view, getAdapterPosition());
         }
     }
 }
