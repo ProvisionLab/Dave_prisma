@@ -1,2 +1,2 @@
-# Dave_prisma
+# Clone_prisma
 Prisma clone
